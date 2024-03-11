@@ -1,3 +1,9 @@
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
+
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
+
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
+
 local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
 
 local window = DrRayLibrary:Load("Destroyer", "Default")
@@ -48,15 +54,261 @@ equipTool()
     end
 end)
 
-tab.newButton("Anti reclining", "it will be impossible to push you away", function()
-    local plr = game.Players.LocalPlayer
+tab.newDropdown("Tools control", "You'll understand", {"Equip tools", "Drop tools", "Delete tools"}, function(selectedOption)
+    if selectedOption == "Equip tools" then
+		for _, tool in ipairs(game:GetService("Players").LocalPlayer.Backpack:GetChildren()) do
+     if tool:IsA("Tool") then
+          tool.Parent = game:GetService("Players").LocalPlayer.Character -- I didn't use Equip because the Equip function unequips any other tools in your character.
+     end
+ end
+		end
+		if selectedOption == "Drop tools" then
+		for i,v in pairs(game.Players.LocalPlayer.Backpack:GetDescendants()) do
+   if v:IsA("Tool") then
+    v.Parent = game.Players.LocalPlayer.Character
+    v.Parent = game.Workspace
+end
+end
+		end
+		if selectedOption == "Delete tools" then
+		local Player = game:GetService("Players").LocalPlayer
+local Backpack = Player.Backpack
+local Character = Player.Character
+
+for _,v in pairs(Backpack:GetChildren()) do
+   if v:IsA("Tool") or v:IsA("HopperBin") then
+       v:Destroy()
+   end
+end
+
+for _,v in pairs(Character:GetChildren()) do
+   if v:IsA("Tool") or v:IsA("HopperBin") then
+       v:Destroy()
+   end 
+end
+		end
+end)
+
+tab.newDropdown("Kill all", "Kills all players with a sword", {"Kill all", "Multi kill all", "Anti kill friends", "Multi anti kill friends"}, function(selectedOption)
+    if selectedOption == "Kill all" then
+		local range = 1000
+local player = game:GetService("Players").LocalPlayer
+game:GetService("RunService").RenderStepped:Connect(function()
+    local p = game.Players:GetPlayers()
+    for i = 2, #p do local v = p[i].Character
+local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
+            if tool and tool:FindFirstChild("Handle") then
+                tool:Activate()
+                for i,v in next, v:GetChildren() do
+                    if v:IsA("BasePart") then
+                        firetouchinterest(tool.Handle,v,0)
+                        firetouchinterest(tool.Handle,v,1)
+                    end
+                end
+            end
+        end
+end)
+Notification:Notify(
+    {Title = "Destroyer", Description = "This function kills everyone sword, but works in some modes"},
+    {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 5, Type = "default"}
+)
+end
+if Value == "Multi kill all" then
+		local range = 1000 -- Установка дальности действия
+local player = game:GetService("Players").LocalPlayer
+game:GetService("RunService").RenderStepped:Connect(function()
+    local p = game.Players:GetPlayers()
+    for i = 2, #p do 
+        local v = p[i].Character
+        if player.Character then
+            for _, tool in pairs(player.Character:GetChildren()) do
+                if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
+                    tool:Activate()
+                    for _, part in pairs(v:GetChildren()) do
+                        if part:IsA("BasePart") then
+                            firetouchinterest(tool.Handle, part, 0)
+                            firetouchinterest(tool.Handle, part, 1)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+Notification:Notify(
+    {Title = "Destroyer", Description = "This function kills everyone sword, but it works on all the tools you wear"},
+    {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 5, Type = "default"}
+)
+end
+if selectedOption == "Anti kill friends" then
+		local range = 1000
+local player = game:GetService("Players").LocalPlayer
+
+-- Функция проверки на дружбу
+local function isFriendWith(player1, player2)
+    return player1:IsFriendsWith(player2.UserId)
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    local players = game.Players:GetPlayers()
+    for i = 2, #players do
+        local otherPlayer = players[i]
+        local character = otherPlayer.Character
+        -- Проверяем, не является ли игрок другом
+        if not isFriendWith(player, otherPlayer) then
+            local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
+            if tool and tool:FindFirstChild("Handle") then
+                tool:Activate()
+                for _, part in next, character:GetChildren() do
+                    if part:IsA("BasePart") then
+                        firetouchinterest(tool.Handle, part, 0)
+                        firetouchinterest(tool.Handle, part, 1)
+                    end
+                end
+            end
+        end
+    end
+end)
+Notification:Notify(
+    {Title = "Destroyer", Description = "This function kills everyone sword, besides your friends"},
+    {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 5, Type = "default"}
+)
+end
+		if selectedOption == "Multi anti kill friends" then
+		local range = 1000 -- Установка дальности действия
+local player = game:GetService("Players").LocalPlayer
+game:GetService("RunService").RenderStepped:Connect(function()
+    local players = game.Players:GetPlayers()
+    for i = 2, #players do 
+        local otherPlayer = players[i]
+        -- Проверка на дружбу
+        if not player:IsFriendsWith(otherPlayer.UserId) then
+            local character = otherPlayer.Character
+            if character then
+                local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
+                for _, tool in pairs(player.Character:GetChildren()) do
+                    if tool:IsA("Tool") and tool:FindFirstChild("Handle") then
+                        tool:Activate()
+                        for _, part in pairs(character:GetChildren()) do
+                            if part:IsA("BasePart") then
+                                firetouchinterest(tool.Handle, part, 0)
+                                firetouchinterest(tool.Handle, part, 1)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+Notification:Notify(
+    {Title = "Destroyer", Description = "This function kills everyone sword, besides your friends"},
+    {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 5, Type = "default"}
+)
+end
+end)
+
+tab.newDropdown("Player mass", "Changes the player's mass", {"Very heavy mass", "Normal mass", "Zero mass"}, function(selectedOption)
+    if selectedOption == "Very heavy mass" then
+		local plr = game.Players.LocalPlayer
 local char = plr.Character
+  
   for _, child in pairs(char:GetChildren()) do
     if child:IsA("BasePart") then
       child.Massless = false
       child.CustomPhysicalProperties = PhysicalProperties.new(math.huge, math.huge, math.huge) 
     end
   end
+		end
+		if selectedOption == "Normal mass" then
+		local plr = game.Players.LocalPlayer
+local char = plr.Character
+
+  for _, child in pairs(char:GetChildren()) do
+    if child:IsA("BasePart") then
+      child.Massless = false
+      child.CustomPhysicalProperties = PhysicalProperties.new(1, 0.3, 0.5) 
+    end
+  end
+		end
+		if selectedOption == "Zero mass" then
+		local plr = game.Players.LocalPlayer
+local char = plr.Character
+
+  for _, child in pairs(char:GetChildren()) do
+    if child:IsA("BasePart") then
+      child.Massless = false
+      child.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0) 
+    end
+  end
+		end
+end)
+
+tab.newDropdown("Mass objects", "Select one of these options!", {"water", "dog", "air", "bb", "airplane", "wohhho", "yeay", "delete"}, function(selectedOption)
+    if selectedOption == "Very heavy parts" then
+        local Players = game:GetService("Players")
+local function isPartOfPlayerCharacter(part)
+    for _, player in ipairs(Players:GetPlayers()) do
+        local character = player.Character
+        if character and part:IsDescendantOf(character) then
+            return true
+        end
+    end
+    return false
+end
+
+for _, part in ipairs(workspace:GetDescendants()) do
+    if part:IsA("BasePart") and not isPartOfPlayerCharacter(part) then
+        part.CustomPhysicalProperties = PhysicalProperties.new(9e999, 0, 0, 9e999, 9e999)
+    end
+end
+        end
+        if selectedOption == "Normal parts" then
+        local Players = game:GetService("Players")
+local function isPartOfPlayerCharacter(part)
+    for _, player in ipairs(Players:GetPlayers()) do
+        local character = player.Character
+        if character and part:IsDescendantOf(character) then
+            return true
+        end
+    end
+    return false
+end
+
+for _, part in ipairs(workspace:GetDescendants()) do
+    if part:IsA("BasePart") and not isPartOfPlayerCharacter(part) then
+        part.CustomPhysicalProperties = PhysicalProperties.new(1, 1, 1, 1, 1)
+    end
+end
+        end
+        if selectedOption == "Very lightweight parts" then
+        local Players = game:GetService("Players")
+local function isPartOfPlayerCharacter(part)
+    for _, player in ipairs(Players:GetPlayers()) do
+        local character = player.Character
+        if character and part:IsDescendantOf(character) then
+            return true
+        end
+    end
+    return false
+end
+
+for _, part in ipairs(workspace:GetDescendants()) do
+    if part:IsA("BasePart") and not isPartOfPlayerCharacter(part) then
+        part.CustomPhysicalProperties = PhysicalProperties.new(-9e9999, 9e9999, 0, 0, 0)
+    end
+end
+        end
+end)
+
+tab.newButton("Kill all NPCs", "kills all NPCs who look at you (if you damage them, their HP will be restored)", function()
+sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", 112412400000)
+sethiddenproperty(game.Players.LocalPlayer, "MaxSimulationRadius", 112412400000)
+for i, d in pairs(game.Workspace:GetDescendants()) do
+    if d.ClassName == 'Humanoid' and not game.Players:FindFirstChild(d.Parent.Name) then
+        d.Health = 0
+    end
+end
 end)
 
 local tab = DrRayLibrary.newTab("Tools", "ImageIdHere")
